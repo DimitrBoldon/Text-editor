@@ -3,9 +3,6 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
-// TODO: Add and configure workbox plugins for a service worker and manifest file.
-// TODO: Add CSS loaders and babel to webpack.
-
 module.exports = () => {
   return {
     mode: 'development',
@@ -14,6 +11,7 @@ module.exports = () => {
       install: './src/js/install.js'
     },
     output: {
+      publicPath: '/',
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
     },
@@ -22,34 +20,44 @@ module.exports = () => {
         template: './index.html',
         title: 'text-editor'
       }),
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'src-sw.js',
+      }),
       new WebpackPwaManifest({
-        name: 'text-editor',
-        short_name: 'Text',
-        background_color: '#7eb4e2',
-        theme_color: "#7eb4e2",
-        start_url: './',
-        publicPath: './',
         fingerprints: false,
         inject: true,
+        display: 'standalone',
+        name: 'text-editor',
+        short_name: 'Text',
+        description: 'JATE or Just Another Text Editor helps keep track of your notes and thoughts.',
+        start_url: '/',
+        publicpath: '/',
+        background_color: "#7eb4e2",
+        theme_color: "#7eb4e2",
         icons: [
           {
             src: path.resolve('./src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
-            destination: path.join('assets', 'icons')
+            destination: path.join('assets', 'icons'), // multiple sizes
           },
         ]
       }),
-      new InjectManifest({
-        swSrc: './src-sw.js',
-        swDest: 'service-worker.js',
-      }),,
     ],
 
     module: {
       rules: [
         {
+        //   test: /\.(png|jpe?g|gif)$/i,
+        //   use: [
+        //     {
+        //       loader: 'file-loader',
+        //     },
+        //   ],
+        // },
+        // {
           test: /\.css$/i,
-          use: ['style-loader', 'css-loader'],
+          use: ['style-loader', 'css-loader'],  
         },
         {
           test: /\.m?js$/,
