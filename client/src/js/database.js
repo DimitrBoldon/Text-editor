@@ -12,27 +12,24 @@ const initdb = async () =>
     },
   });
 
-// Add logic to a method that accepts some content and adds it to the database
+// TODO: Add logic to a method that accepts some content and adds it to the database
 export const putDb = async (content) => {
-  const db = await initdb();
-  const tx = db.transaction('jate', 'readwrite');
+  const jateDb = await openDB('jate', 1);
+  const tx = jateDb.transaction('jate', 'readwrite');
   const store = tx.objectStore('jate');
-  
-  // Use put method to add or update data in the object store
-  await store.put(content);
-  await tx.done;
-};
+  const request = store.put({ id: 1, jate: content });
+  await request;
+}
+console.error('putDb not implemented');
 
 export const getDb = async () => {
-  const db = await initdb();
-  const tx = db.transaction('jate', 'readonly');
-  const store = tx.objectStore('jate');
+const jateDb = await openDB('jate', 1);
+const tx = jateDb.transaction('jate', 'readonly');
+const store = tx.objectStore('jate');
+const request = store.get(1);
+const result = await request;
 
-  // Use getAll method to retrieve all data from the object store
-  const allContent = await store.getAll();
-  await tx.done;
-
-  return allContent;
+return result?.value;
 };
 
 initdb();
